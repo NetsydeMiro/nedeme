@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "Menu.js",
+  "sourceRoot": "",
+  "sources": [
+    "Menu.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA;AAAA,EAAA,MAAA,CAAO,SAAA,GAAA;AACL,QAAA,IAAA;WAAM;wBAAN;;kBAAA;;SADK;EAAA,CAAP,CAAA,CAAA;AAAA"
+}

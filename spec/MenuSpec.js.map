@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "MenuSpec.js",
+  "sourceRoot": "",
+  "sources": [
+    "MenuSpec.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA;AAAA,EAAA,MAAA,CAAO,CAAC,MAAD,CAAP,EAAiB,SAAC,IAAD,GAAA;WAEf,QAAA,CAAS,MAAT,EAAiB,SAAA,GAAA;aAEf,QAAA,CAAS,WAAT,EAAsB,SAAA,GAAA;eAEpB,EAAA,CAAG,sCAAH,EAA2C,SAAA,GAAA,CAA3C,EAFoB;MAAA,CAAtB,EAFe;IAAA,CAAjB,EAFe;EAAA,CAAjB,CAAA,CAAA;AAAA"
+}

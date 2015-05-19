@@ -6,7 +6,7 @@ define ['MenuItem', 'Menu'], (MenuItem, Menu) ->
 
   describe 'Menu', -> 
 
-    xdescribe 'constructor', -> 
+    describe 'constructor', -> 
       it 'constructs a menu from flat array of objects', -> 
         flatArray = [{value:1, text:'one'},{value:2, text:'two'},{value:3, text:'three'}]
         menu = new Menu 'MenuHeader', flatArray
@@ -17,20 +17,24 @@ define ['MenuItem', 'Menu'], (MenuItem, Menu) ->
         for arrayItem, arrayIndex in flatArray
           menuItem = menu.items[arrayIndex]
           expect(menuItem.constructor).toBe MenuItem
-          expect(menuItemEquals menuItem, arrayItem).toBe true
+          expect(menuItemEquals menuItem, arrayItem).toBeTruthy
 
       it 'constructs a nested menu from array of objects', -> 
         nestedArray =
           [
-            value:1 
-            text:'one' 
-            subMenu: 
-              header: 'nested' 
-              items: 
-                value:11
-                text:'oneone', 
-            value:2 
-            text:'two'
+            {
+              value:1 
+              text:'one' 
+              subMenu: 
+                header: 'nested' 
+                items: 
+                  value:11
+                  text:'oneone'
+            },
+            {
+              value:2 
+              text:'two'
+            }
           ]
 
         menu = new Menu 'MenuHeader', nestedArray
@@ -42,7 +46,7 @@ define ['MenuItem', 'Menu'], (MenuItem, Menu) ->
           menuItem = menu.items[arrayIndex]
           expect(menuItem.constructor).toBe MenuItem
 
-          expect(menuItemEquals menuItem, arrayItem).toBe true
+          expect(menuItemEquals menuItem, arrayItem).toBeTruthy
 
 
     describe '#clamp()', -> 

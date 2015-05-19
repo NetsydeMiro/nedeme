@@ -7,7 +7,7 @@ define ->
 
     isClamped: (selections) -> 
       for property, value of selections
-        return true if value in @clamps[property] 
+        return true if @clamps[property] and value in @clamps[property] 
       return false
 
     load: (obj) -> 

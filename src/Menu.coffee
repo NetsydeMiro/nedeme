@@ -1,5 +1,4 @@
 define ['MenuItem'], (MenuItem) -> 
-
   class Menu
 
     constructor: (obj) -> 

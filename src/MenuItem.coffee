@@ -16,6 +16,6 @@ define ->
         return true
       else
         for property, value of clamps 
-          return true if @clamps[property] and value in @clamps[property] 
-        return false
+          return false if @clamps[property] and value not in @clamps[property] 
+        return true 
 

@@ -37,15 +37,27 @@ define ['MenuItem'], (MenuItem) ->
 
     describe '#passesClamps()', -> 
 
-      it 'returns true if passes clamps', ->
+      it 'returns true if no clamp specified', ->
+        item = new MenuItem value: 'aValue', text: 'someText', clamps: {aClampProperty: [7]}
+        expect(item.passesClamps()).toBe true
+
+      it 'returns true if passes clamp', ->
         item = new MenuItem value: 'aValue', text: 'someText', clamps: {aClampProperty: [7]}
         expect(item.passesClamps(aClampProperty: 7)).toBe true
+
+      it 'returns true if passes multi-clamp', ->
+        item = new MenuItem value: 'aValue', text: 'someText', clamps: {aClampProperty: [7], anotherClampProperty: [8]}
+        expect(item.passesClamps(aClampProperty: 7, anotherClampProperty: 8)).toBe true
+
+      it 'returns true if clamp specifies different property', ->
+        item = new MenuItem value: 'aValue', text: 'someText', clamps: {aClampProperty: [7]}
+        expect(item.passesClamps(anotherClampProperty: 7)).toBe true
 
       it 'returns false if does not pass clamps because of value', ->
         item = new MenuItem value: 'aValue', text: 'someText', clamps: {aClampProperty: [7]}
         expect(item.passesClamps(aClampProperty: 8)).toBe false
 
-      it 'returns false if does not pass clamps becaus of property', ->
-        item = new MenuItem value: 'aValue', text: 'someText', clamps: {aClampProperty: [7]}
-        expect(item.passesClamps(anotherClampProperty: 7)).toBe false
+      it 'returns false if does not pass single clamp of multi-clamp specification', ->
+        item = new MenuItem value: 'aValue', text: 'someText', clamps: {aClampProperty: [7], anotherClampProperty: [9]}
+        expect(item.passesClamps(aClampProperty: 7, anotherClampProperty: 8)).toBe false
 

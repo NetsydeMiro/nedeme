@@ -1,13 +1,19 @@
-define -> 
+define ['jquery'], -> 
   Renderer = 
 
-    fillTemplate: (template, object, objectOverride) -> 
-      result = template
-      for key, value of object
-        value = objectOverride[key] if objectOverride and objectOverride[key]
-        result = result.replace "{{#{key}}}", value
+    fillTemplate: (template, object) -> 
 
-      result.replace /{{.*}}/, ""
+      fillTemplateHelper = (template, object, prefix) -> 
+        result = template
+        for key, value of object
+          if $.type(value) is 'object'
+            result = fillTemplateHelper result, value, key + '-'
+          else
+            result = result.replace "{{#{prefix + key}}}", value
+
+        result
+
+      fillTemplateHelper(template, object, '')
 
     getMarkup: (menu, menuMarkup, menuItemMarkup) -> 
       return '' unless menu
@@ -15,12 +21,12 @@ define ->
       itemsMarkup = if menu.items 
         menu.items.map( (item) -> 
 
-          overriddenProperties = if item.subMenu 
-            {subMenu: Renderer.getMarkup item.subMenu, menuMarkup, menuItemMarkup }
+          expandedItem = if item.subMenu 
+            $.extend {}, item, {subMenu: Renderer.getMarkup item.subMenu, menuMarkup, menuItemMarkup }
           else
-            {}
+            $.extend {}, item, {subMenu: ""}
 
-          Renderer.fillTemplate menuItemMarkup, item, overriddenProperties
+          Renderer.fillTemplate menuItemMarkup, expandedItem
         ).join('')
       else
         ""

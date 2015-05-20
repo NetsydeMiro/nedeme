@@ -9,20 +9,16 @@ define ['Renderer'], (Renderer) ->
         result = Renderer.fillTemplate template, {value: "test"}
         expect(result).toEqual "This is a test template"
 
-      it 'removes unknown placeholders', ->
-        template = "This is a {{value}} template"
-        result = Renderer.fillTemplate template, {value2: "not entered"}
-        expect(result).toEqual "This is a  template"
-
       it 'fills multiple placeholders', ->
         template = "This is a {{value}} template. {{fin}}."
         result = Renderer.fillTemplate template, {value: "test", fin: 'Finito'}
         expect(result).toEqual "This is a test template. Finito."
 
-      it 'can override placeholders with secondary argument', ->
-        template = "This is a {{value}} template. {{fin}}."
-        result = Renderer.fillTemplate template, {value: "test", fin: 'Finito'}, {value: 'test2'}
-        expect(result).toEqual "This is a test2 template. Finito."
+      it 'collapses nested properties', -> 
+        template = "This is a {{value}} template. Collapsed property: {{data-special}}. {{fin}}."
+        result = Renderer.fillTemplate template, {value: "test", fin: 'Finito', data: {special: 'it works!'}}
+        expect(result).toEqual "This is a test template. Collapsed property: it works!. Finito."
+
 
     describe '::getMarkup()', -> 
 

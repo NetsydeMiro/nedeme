@@ -37,7 +37,7 @@ module.exports = (grunt) ->
               baseUrl: 'src/'
               paths:
                 'jquery': '../lib/jquery-2.1.3'
-                'jquery-ui': '../lib/jquery-ui-1.11.2-core-interactions-effects'
+                'jquery-ui': '../lib/jquery-ui-1.11.4-core-menu'
                 'mock-ajax': '../lib/mock-ajax'
               shim: 
                 'jquery-ui':
@@ -54,7 +54,7 @@ module.exports = (grunt) ->
               baseUrl: 'src/'
               paths:
                 'jquery': '../lib/jquery-2.1.3'
-                'jquery-ui': '../lib/jquery-ui-1.11.2-core-interactions-effects'
+                'jquery-ui': '../lib/jquery-ui-1.11.4-core-menu'
                 'mock-ajax': '../lib/mock-ajax'
               shim: 
                 'jquery-ui':

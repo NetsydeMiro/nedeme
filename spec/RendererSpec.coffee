@@ -20,13 +20,13 @@ define ['Renderer'], (Renderer) ->
         expect(result).toEqual "This is a test template. Collapsed property: it works!. Finito."
 
 
-    describe '::getMarkup()', -> 
+    describe '::createMarkup()', -> 
 
       it 'gets correct markup for empty menu', -> 
 
-        markup = Renderer.getMarkup({header: 'AHeader', items: []}, 
-        "<menu header='{{header}}'>{{items}}</menu>", 
-        "<menuitem text='{{text}}' value='{{value}}'></menuitem>")
+        markup = Renderer.createMarkup {header: 'AHeader', items: []}, 
+        {menu: "<menu header='{{header}}'>{{items}}</menu>", 
+        menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"}
 
         expect(markup).toEqual "<menu header='AHeader'></menu>"
 
@@ -37,9 +37,9 @@ define ['Renderer'], (Renderer) ->
         <menuitem text='two' value='2'></menuitem>\
         </menu>"
 
-        markup = Renderer.getMarkup({header: 'AHeader', items: [{text: 'one', value: 1},{text: 'two', value: 2}]}, 
-        "<menu header='{{header}}'>{{items}}</menu>", 
-        "<menuitem text='{{text}}' value='{{value}}'></menuitem>")
+        markup = Renderer.createMarkup {header: 'AHeader', items: [{text: 'one', value: 1},{text: 'two', value: 2}]}, 
+        {menu: "<menu header='{{header}}'>{{items}}</menu>", 
+        menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"}
 
         expect(markup).toEqual expected
 
@@ -55,14 +55,41 @@ define ['Renderer'], (Renderer) ->
         <menuitem text='two' value='2'></menuitem>\
         </menu>"
 
-        markup = Renderer.getMarkup({header: 'AHeader', items: 
+        markup = Renderer.createMarkup({header: 'AHeader', items: 
           [
             {text: 'one', value: 1, subMenu: {header: 'BHeader', items: 
               [{text: 'oneone', value: 11}, {text: 'onetwo', value: 12}]}},
             {text: 'two', value: 2}
           ]}, 
-        "<menu header='{{header}}'>{{items}}</menu>", 
-        "<menuitem text='{{text}}' value='{{value}}'>{{subMenu}}</menuitem>")
+        {menu: "<menu header='{{header}}'>{{items}}</menu>", 
+        menuItem: "<menuitem text='{{text}}' value='{{value}}'>{{subMenu}}</menuitem>"})
+
+        expect(markup).toEqual expected
+
+      it 'allows overriding default markup', -> 
+
+        expected = "<menu header='AHeader'>\
+        <menuitem text='one' value='1'>\
+        <submenu header='BHeader'>\
+        <menuitem text='oneone' value='11'></menuitem>\
+        <menuitem text='onetwo' value='12'></menuitem>\
+        </submenu>\
+        </menuitem>\
+        <divider weird-here='true' />\
+        <menuitem text='two' value='2'></menuitem>\
+        </menu>"
+
+        markup = Renderer.createMarkup({header: 'AHeader', items: 
+          [
+            {text: 'one', value: 1, subMenu: {header: 'BHeader', markup: 'submenu', items: 
+              [{text: 'oneone', value: 11}, {text: 'onetwo', value: 12}]}},
+            {markup: 'divider', weird: true},
+            {text: 'two', value: 2}
+          ]}, 
+        {menu: "<menu header='{{header}}'>{{items}}</menu>", 
+        submenu: "<submenu header='{{header}}'>{{items}}</submenu>", 
+        divider: "<divider weird-here='{{weird}}' />",
+        menuItem: "<menuitem text='{{text}}' value='{{value}}'>{{subMenu}}</menuitem>"})
 
         expect(markup).toEqual expected
 

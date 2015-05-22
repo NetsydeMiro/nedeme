@@ -1,9 +1,5 @@
 define ['MenuItem', 'Menu'], (MenuItem, Menu) -> 
 
-  menuItemEquals = (m1, m2) -> 
-    m1 and m2 and m1.value == m2.value and m1.text == m2.text and 
-      (not m1.subMenu and not m2.subMenu or menuItemEquals(m1.subMenu, m2.subMenu))
-
   describe 'Menu', -> 
 
     describe 'constructor', -> 

@@ -15,21 +15,25 @@ define ['jquery'], ->
 
       fillTemplateHelper(template, object, '')
 
-    getMarkup: (menu, menuMarkup, menuItemMarkup) -> 
+    createMarkup: (menu, markup) -> 
       return '' unless menu
 
       itemsMarkup = if menu.items 
         menu.items.map( (item) -> 
 
           expandedItem = if item.subMenu 
-            $.extend {}, item, {subMenu: Renderer.getMarkup item.subMenu, menuMarkup, menuItemMarkup }
+            $.extend {}, item, {subMenu: Renderer.createMarkup item.subMenu, markup }
           else
             $.extend {}, item, {subMenu: ""}
+
+          menuItemMarkup = markup[item.markup or 'menuItem']
 
           Renderer.fillTemplate menuItemMarkup, expandedItem
         ).join('')
       else
         ""
 
-      Renderer.fillTemplate menuMarkup, {header: menu.header, items: itemsMarkup}
+      menuMarkup = markup[menu.markup or 'menu']
+
+      Renderer.fillTemplate menuMarkup, $.extend({}, menu, {items: itemsMarkup})
 

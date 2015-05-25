@@ -27,7 +27,7 @@ define ['Renderer'], (Renderer) ->
 
     describe '::createMarkup()', -> 
 
-      it 'adds uid as data property', -> 
+      xit 'adds uid as data property', -> 
         markup = Renderer.createMarkup {header: 'AHeader', items: [], _uid: 'testguid'}, 
         {menu: "<menu header='{{header}}'>{{items}}</menu>", 
         menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"}

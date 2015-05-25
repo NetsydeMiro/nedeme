@@ -19,8 +19,21 @@ define ['Renderer'], (Renderer) ->
         result = Renderer.fillTemplate template, {value: "test", fin: 'Finito', data: {special: 'it works!'}}
         expect(result).toEqual "This is a test template. Collapsed property: it works!. Finito."
 
+      it 'ignores specified properties', ->
+        template = "This is a {{value}} template. This is ignored: {{ignored}}. {{fin}}."
+        result = Renderer.fillTemplate template, {value: "test", fin: 'Finito', ignored: "this shouldn't render"}, ['ignored']
+        expect(result).toEqual "This is a test template. This is ignored: {{ignored}}. Finito."
+
 
     describe '::createMarkup()', -> 
+
+      it 'adds uid as data property', -> 
+        markup = Renderer.createMarkup {header: 'AHeader', items: [], _uid: 'testguid'}, 
+        {menu: "<menu header='{{header}}'>{{items}}</menu>", 
+        menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"}
+
+        expect(markup).toEqual "<menu header='AHeader' data-uid='testguid'></menu>"
+
 
       it 'gets correct markup for empty menu', -> 
 

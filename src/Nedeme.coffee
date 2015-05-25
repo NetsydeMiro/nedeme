@@ -17,18 +17,21 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
     setMenu: (name, menu) ->
       @menus[name] = new Menu menu
 
-    renderMenu: (menuName, menuSelector) -> 
-      $menu = $(Renderer.createMarkup @menus[menuName], @options.markup)
+    renderMenu: (menu, menuSelector) -> 
+      $menu = $(Renderer.createMarkup menu, @options.markup)
       $menuContainer = $(menuSelector).html('').append($menu)
       @options.activate.call $menu
+      $menu
 
+    plantMenu: (menuName, menuSelector) -> 
       @menuSelectors ?= {} 
       @menuSelectors[menuName] ?= []
       @menuSelectors[menuName].push menuSelector
-      $menu
 
-    updateMenus: -> 
+      @renderMenu @menus[menuName], menuSelector
+
+    updateMenus: (selectedValues) -> 
       for menuName, menuSelectors of @menuSelectors
         for menuSelector in menuSelectors
-          @renderMenu menuName, menuSelector
+          @renderMenu @menus[menuName].clamped(selectedValues), menuSelector
 

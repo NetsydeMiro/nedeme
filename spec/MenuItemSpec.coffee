@@ -1,6 +1,22 @@
-define ['MenuItem'], (MenuItem) -> 
+define ['MenuItem', 'jquery'], (MenuItem) -> 
 
   describe 'MenuItem', -> 
+
+    describe 'constructor', -> 
+
+      it 'adds a unique identifier field _uid', -> 
+        obj = value: 'aValue', text: 'aText'
+        item = new MenuItem obj
+        item2 = new MenuItem obj
+
+        hexRange = '[a-f0-9]'
+        guidFormat = ///#{hexRange}{8}-#{hexRange}{4}-4#{hexRange}{3}-#{hexRange}{4}-#{hexRange}{12}///
+
+        expect(item._uid.match(guidFormat)[0]).toEqual item._uid
+        expect(item2._uid.match(guidFormat)[0]).toEqual item2._uid
+
+        expect(item._uid).not.toEqual item2._uid
+      
 
     describe '#equals', -> 
 

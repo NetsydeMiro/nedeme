@@ -43,5 +43,5 @@ define ['jquery'], ->
       filled = Renderer.fillTemplate menuMarkup, $.extend({}, menu, {items: itemsMarkup})
       domDictionary[menu] = $(filled)
       
-      markup: filled, domDictionary: domDictionary
+      filled
 

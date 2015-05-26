@@ -39,6 +39,20 @@ define ['MenuItem', 'Menu'], (MenuItem, Menu) ->
         expect(menu.equals nestedObject).toBeTruthy()
 
 
+      it 'adds a unique identifier field _uid', -> 
+        obj = {header: 'MenuHeader', items: [{value:1, text:'one'},{value:2, text:'two'},{value:3, text:'three'}]}
+        menu = new Menu obj
+        menu2 = new Menu obj
+
+        hexRange = '[a-f0-9]'
+        guidFormat = ///#{hexRange}{8}-#{hexRange}{4}-4#{hexRange}{3}-#{hexRange}{4}-#{hexRange}{12}///
+
+        expect(menu._uid.match(guidFormat)[0]).toEqual menu._uid
+        expect(menu2._uid.match(guidFormat)[0]).toEqual menu2._uid
+
+        expect(menu._uid).not.toEqual menu2._uid
+
+
     describe '#equals()', -> 
 
       it 'returns truthy if specific properties are same ', -> 

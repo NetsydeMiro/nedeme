@@ -27,13 +27,6 @@ define ['Renderer'], (Renderer) ->
 
     describe '::createMarkup()', -> 
 
-      xit 'adds uid as data property', -> 
-        markup = Renderer.createMarkup {header: 'AHeader', items: [], _uid: 'testguid'}, 
-        {menu: "<menu header='{{header}}'>{{items}}</menu>", 
-        menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"}
-
-        expect(markup).toEqual "<menu header='AHeader' data-uid='testguid'></menu>"
-
 
       it 'gets correct markup for empty menu', -> 
 
@@ -94,9 +87,9 @@ define ['Renderer'], (Renderer) ->
 
         markup = Renderer.createMarkup({header: 'AHeader', items: 
           [
-            {text: 'one', value: 1, subMenu: {header: 'BHeader', markup: 'submenu', items: 
+            {text: 'one', value: 1, subMenu: {header: 'BHeader', template: 'submenu', items: 
               [{text: 'oneone', value: 11}, {text: 'onetwo', value: 12}]}},
-            {markup: 'divider', weird: true},
+            {template: 'divider', weird: true},
             {text: 'two', value: 2}
           ]}, 
         {menu: "<menu header='{{header}}'>{{items}}</menu>", 
@@ -106,4 +99,73 @@ define ['Renderer'], (Renderer) ->
 
         expect(markup).toEqual expected
 
+
+      it 'calls supplied callback during markup creation', -> 
+
+        spies = 
+          onMarkupCreated: (obj, filledTemplate) -> filledTemplate
+
+        spyOn(spies, 'onMarkupCreated').and.callThrough()
+
+        menu = 
+          header: 'AHeader' 
+          items: [{text: 'one', value: 1},{text: 'two', value: 2}]
+
+        templates = 
+          menu: "<menu header='{{header}}'>{{items}}</menu>"
+          menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"
+
+        markup = Renderer.createMarkup menu, templates, spies.onMarkupCreated
+
+        expect(spies.onMarkupCreated.calls.count()).toEqual 3
+
+        expect(spies.onMarkupCreated.calls.argsFor(0)).toEqual [menu.items[0], "<menuitem text='one' value='1'></menuitem>"]
+        expect(spies.onMarkupCreated.calls.argsFor(1)).toEqual [menu.items[1], "<menuitem text='two' value='2'></menuitem>"]
+        expect(spies.onMarkupCreated.calls.argsFor(2)).toEqual [menu, "<menu header='AHeader'>\
+        <menuitem text='one' value='1'></menuitem>\
+        <menuitem text='two' value='2'></menuitem>\
+        </menu>"]
+
+      it 'supplied callback can modify final markup', -> 
+
+        onMarkupCreated = (obj, filledTemplate) -> 
+          filledTemplate.replace('header', 'footer').replace('text', 'word')
+
+        menu = 
+          header: 'AHeader' 
+          items: [{text: 'one', value: 1},{text: 'two', value: 2}]
+
+        templates = 
+          menu: "<menu header='{{header}}'>{{items}}</menu>"
+          menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"
+
+        markup = Renderer.createMarkup menu, templates, onMarkupCreated
+
+        expected = "<menu footer='AHeader'>\
+        <menuitem word='one' value='1'></menuitem>\
+        <menuitem word='two' value='2'></menuitem>\
+        </menu>"
+
+        expect(markup).toEqual expected
+
+
+      it 'supplied callback can modify source object', -> 
+
+        onMarkupCreated = (obj, filledTemplate) -> 
+          obj.newProperty = obj
+          filledTemplate
+
+        menu = 
+          header: 'AHeader' 
+          items: [{text: 'one', value: 1},{text: 'two', value: 2}]
+
+        templates = 
+          menu: "<menu header='{{header}}'>{{items}}</menu>"
+          menuItem: "<menuitem text='{{text}}' value='{{value}}'></menuitem>"
+
+        markup = Renderer.createMarkup menu, templates, onMarkupCreated
+
+        expect(menu.newProperty).toBe menu
+        expect(menu.items[0].newProperty).toBe menu.items[0]
+        expect(menu.items[1].newProperty).toBe menu.items[1]
 

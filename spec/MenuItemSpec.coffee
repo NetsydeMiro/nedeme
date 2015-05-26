@@ -4,7 +4,7 @@ define ['MenuItem', 'jquery'], (MenuItem) ->
 
     describe 'constructor', -> 
 
-      xit 'adds a unique identifier field _uid', -> 
+      it 'adds a unique identifier field _uid', -> 
         obj = value: 'aValue', text: 'aText'
         item = new MenuItem obj
         item2 = new MenuItem obj

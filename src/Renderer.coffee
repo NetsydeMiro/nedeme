@@ -15,33 +15,30 @@ define ['jquery'], ->
 
       fillTemplateHelper(template, object, '')
 
-    createMarkup: (menu, markup) -> 
+    createMarkup: (menu, templates, onMarkupCreated = (obj, markup) -> markup) -> 
       return '' unless menu
-
-      domDictionary = {}
 
       itemsMarkup = if menu.items 
         menu.items.map( (item) -> 
 
           expandedItem = if item.subMenu 
-            $.extend {}, item, {subMenu: Renderer.createMarkup item.subMenu, markup }
+            $.extend {}, item, {subMenu: Renderer.createMarkup item.subMenu, templates }
           else
             $.extend {}, item, {subMenu: ""}
 
-          menuItemMarkup = markup[item.markup or 'menuItem']
+          template = templates[item.template or 'menuItem']
 
-          filled = Renderer.fillTemplate menuItemMarkup, expandedItem
-          domDictionary[item] = $(filled)
-          filled
+          markup = Renderer.fillTemplate template, expandedItem
+
+          onMarkupCreated.call(null, item, markup)
 
         ).join('')
       else
         ""
 
-      menuMarkup = markup[menu.markup or 'menu']
+      template = templates[menu.template or 'menu']
 
-      filled = Renderer.fillTemplate menuMarkup, $.extend({}, menu, {items: itemsMarkup})
-      domDictionary[menu] = $(filled)
-      
-      filled
+      markup = Renderer.fillTemplate template, $.extend({}, menu, {items: itemsMarkup})
+
+      onMarkupCreated.call(null, menu, markup)
 

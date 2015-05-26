@@ -4,7 +4,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
   stripMarkupIds = (markup) -> 
     hexRange = '[a-f0-9]'
     guidFormat = "#{hexRange}{8}-#{hexRange}{4}-4#{hexRange}{3}-#{hexRange}{4}-#{hexRange}{12}"
-    result = markup.replace ///\sid="#{guidFormat}"///g, ''
+    result = markup.replace ///\sdata-nedemeuid="#{guidFormat}"///g, ''
     result
 
   describe 'Nedeme', -> 
@@ -135,10 +135,15 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         menuOne = nedeme.menus.menuOne
 
         $menu = $menuContainer.find('ul').first()
-        expect($menu.attr('id')).toEqual menuOne._uid
+        expect($menu.data('nedemeuid')).toEqual menuOne._uid
 
         $subMenu = $menuContainer.find('li ul').first()
-        expect($subMenu.attr('id')).toEqual menuOne.items[0].subMenu._uid
+        expect($subMenu.data('nedemeuid')).toEqual menuOne.items[0].subMenu._uid
 
-       
+        $items = $menuContainer.find('li')
+
+        expect($($items[0]).data('nedemeuid')).toEqual menuOne.items[0]._uid
+        expect($($items[1]).data('nedemeuid')).toEqual menuOne.items[0].subMenu.items[0]._uid
+        expect($($items[2]).data('nedemeuid')).toEqual menuOne.items[0].subMenu.items[1]._uid
+        expect($($items[3]).data('nedemeuid')).toEqual menuOne.items[1]._uid
 

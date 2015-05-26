@@ -4,8 +4,6 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
     @defaults = 
       activate: -> 
         $(this).menu()
-      identify: (obj, markup) -> 
-        $('<div></div>').append($(markup).attr('id', obj._uid)).html()
       templates: 
         menu: '<ul>{{items}}</ul>'
         menuItem: '<li>{{text}}{{subMenu}}</li>'
@@ -33,7 +31,10 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
           @_renderMenu @menus[menuName].clamped(selectedValues), $menuContainer
 
     _renderMenu: (menu, $menuContainer) -> 
-      $menu = $(Renderer.createMarkup menu, @options.templates, @options.identify)
+      $menu = $(Renderer.createMarkup menu, @options.templates, @_addMarkupUid)
       $menuContainer.html('').append($menu)
       @options.activate.call $menu
       $menu
+
+    _addMarkupUid: (obj, markup) -> 
+      $('<div></div>').append($(markup).attr('data-nedemeuid', obj._uid)).html()

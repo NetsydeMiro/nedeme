@@ -1,5 +1,12 @@
 define ['Nedeme', 'jquery-ui'], (Nedeme) -> 
 
+  # TODO: create markup without id matcher
+  stripMarkupIds = (markup) -> 
+    hexRange = '[a-f0-9]'
+    guidFormat = "#{hexRange}{8}-#{hexRange}{4}-4#{hexRange}{3}-#{hexRange}{4}-#{hexRange}{12}"
+    result = markup.replace ///\sid="#{guidFormat}"///g, ''
+    result
+
   describe 'Nedeme', -> 
 
     $testTarget = null
@@ -11,7 +18,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
     afterEach -> 
       $testTarget.remove()
 
-    describe '#plantMenu()', -> 
+    describe '#renderMenu()', -> 
 
       basicMenus = null
 
@@ -42,15 +49,15 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
               {text: 'C2'}
             ]
 
-      it 'plants default menus', -> 
+      it 'renders default menus', -> 
 
         nedeme = new Nedeme basicMenus, {activate: -> }
 
         $menu1 = $('<div id="menu1"></div>').appendTo $testTarget
         $menu2 = $('<div id="menu2"></div>').appendTo $testTarget
 
-        nedeme.plantMenu 'menuOne', '#menu1'
-        nedeme.plantMenu 'menuTwo', '#menu2'
+        nedeme.renderMenu 'menuOne', '#menu1'
+        nedeme.renderMenu 'menuTwo', '#menu2'
 
         expected1 = "
         <ul>\
@@ -76,19 +83,18 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         </ul>\
         "
 
-        expect($menu1.html()).toEqual expected1
+        expect(stripMarkupIds $menu1.html()).toEqual expected1
+        expect(stripMarkupIds $menu2.html()).toEqual expected2
 
-        expect($menu2.html()).toEqual expected2
-
-      it 'clears existing content prior to planting', -> 
+      it 'clears existing content prior to rendering', -> 
 
         nedeme = new Nedeme basicMenus, {activate: -> }
 
         $menu1 = $('<div id="menu1">Dummy Content</div>').appendTo $testTarget
         $menu2 = $('<div id="menu2">Should Disappear</div>').appendTo $testTarget
 
-        nedeme.plantMenu 'menuOne', '#menu1'
-        nedeme.plantMenu 'menuTwo', '#menu2'
+        nedeme.renderMenu 'menuOne', '#menu1'
+        nedeme.renderMenu 'menuTwo', '#menu2'
 
         expected1 = "
         <ul>\
@@ -114,7 +120,25 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         </ul>\
         "
 
-        expect($menu1.html()).toEqual expected1
+        expect(stripMarkupIds $menu1.html()).toEqual expected1
+        expect(stripMarkupIds $menu2.html()).toEqual expected2
 
-        expect($menu2.html()).toEqual expected2
+
+      it 'tags markup with appropriate ids', -> 
+
+        nedeme = new Nedeme {menuOne: basicMenus.menuOne}, {activate: -> }
+
+        $menuContainer = $('<div id="menu1">Dummy Content</div>').appendTo $testTarget
+
+        markup = nedeme.renderMenu 'menuOne', '#menu1'
+
+        menuOne = nedeme.menus.menuOne
+
+        $menu = $menuContainer.find('ul').first()
+        expect($menu.attr('id')).toEqual menuOne._uid
+
+        $subMenu = $menuContainer.find('li ul').first()
+        expect($subMenu.attr('id')).toEqual menuOne.items[0].subMenu._uid
+
+       
 

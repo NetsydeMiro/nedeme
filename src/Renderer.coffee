@@ -22,7 +22,7 @@ define ['jquery'], ->
         menu.items.map( (item) -> 
 
           expandedItem = if item.subMenu 
-            $.extend {}, item, {subMenu: Renderer.createMarkup item.subMenu, templates }
+            $.extend {}, item, {subMenu: Renderer.createMarkup item.subMenu, templates, onMarkupCreated }
           else
             $.extend {}, item, {subMenu: ""}
 

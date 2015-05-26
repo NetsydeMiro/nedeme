@@ -1,5 +1,7 @@
 define ['MenuItem', 'jquery'], (MenuItem) -> 
 
+  #TODO create menu & menuItem matchers, and strip equals function out of respective classes
+
   describe 'MenuItem', -> 
 
     describe 'constructor', -> 

@@ -126,6 +126,89 @@ define ['Renderer'], (Renderer) ->
         <menuitem text='two' value='2'></menuitem>\
         </menu>"]
 
+      it 'calls supplied callback during nested markup creation', -> 
+
+        spies = 
+          onMarkupCreated: (obj, filledTemplate) -> filledTemplate
+
+        spyOn(spies, 'onMarkupCreated').and.callThrough()
+
+        menu = 
+          header: 'AHeader' 
+          items: 
+            [
+              {
+                text: 'one' 
+                value: 1 
+                subMenu: 
+                  header: 'BHeader' 
+                  items: 
+                    [
+                      {text: 'oneone', value: 11} 
+                      {text: 'onetwo', value: 12}
+                    ]
+              }
+              {
+                text: 'two' 
+                value: 2
+              }
+            ]
+
+        templates = 
+          menu: "<menu header='{{header}}'>{{items}}</menu>"
+          menuItem: "<menuitem text='{{text}}' value='{{value}}'>{{subMenu}}</menuitem>"
+
+        markup = Renderer.createMarkup menu, templates, spies.onMarkupCreated
+
+        expect(spies.onMarkupCreated.calls.count()).toEqual 6
+
+        expect(spies.onMarkupCreated.calls.argsFor(0)).toEqual [
+          menu.items[0].subMenu.items[0]
+          "<menuitem text='oneone' value='11'></menuitem>"
+        ]
+
+        expect(spies.onMarkupCreated.calls.argsFor(1)).toEqual [
+          menu.items[0].subMenu.items[1]
+          "<menuitem text='onetwo' value='12'></menuitem>"
+        ]
+
+        expect(spies.onMarkupCreated.calls.argsFor(2)).toEqual [
+          menu.items[0].subMenu 
+          "<menu header='BHeader'>\
+          <menuitem text='oneone' value='11'></menuitem>\
+          <menuitem text='onetwo' value='12'></menuitem>\
+          </menu>"
+        ]
+
+        expect(spies.onMarkupCreated.calls.argsFor(3)).toEqual [
+          menu.items[0] 
+          "<menuitem text='one' value='1'>\
+          <menu header='BHeader'>\
+          <menuitem text='oneone' value='11'></menuitem>\
+          <menuitem text='onetwo' value='12'></menuitem>\
+          </menu>\
+          </menuitem>"
+        ]
+
+        expect(spies.onMarkupCreated.calls.argsFor(4)).toEqual [
+          menu.items[1] 
+          "<menuitem text='two' value='2'></menuitem>"
+        ]
+
+        expect(spies.onMarkupCreated.calls.argsFor(5)).toEqual [
+          menu 
+          "<menu header='AHeader'>\
+          <menuitem text='one' value='1'>\
+          <menu header='BHeader'>\
+          <menuitem text='oneone' value='11'></menuitem>\
+          <menuitem text='onetwo' value='12'></menuitem>\
+          </menu>\
+          </menuitem>\
+          <menuitem text='two' value='2'></menuitem>\
+          </menu>"
+        ]
+
+
       it 'supplied callback can modify final markup', -> 
 
         onMarkupCreated = (obj, filledTemplate) -> 

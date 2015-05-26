@@ -2,8 +2,11 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
   class Nedeme
 
     @defaults = 
-      activate: -> $(this).menu()
-      markup: 
+      activate: -> 
+        $(this).menu()
+      identify: (obj, markup) -> 
+        $('<div></div>').append($(markup).attr('id', obj._uid)).html()
+      templates: 
         menu: '<ul>{{items}}</ul>'
         menuItem: '<li>{{text}}{{subMenu}}</li>'
         divider: '<li class="ui-widget-header">{{text}}</li>'
@@ -17,21 +20,20 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
     setMenu: (name, menu) ->
       @menus[name] = new Menu menu
 
-    renderMenu: (menu, menuSelector) -> 
-      $menu = $(Renderer.createMarkup menu, @options.markup)
-      $menuContainer = $(menuSelector).html('').append($menu)
-      @options.activate.call $menu
-      $menu
+    renderMenu: (menuName, menuSelector) -> 
+      @menuContainers ?= {} 
+      @menuContainers[menuName] ?= []
+      @menuContainers[menuName].push($menuContainer = $(menuSelector))
 
-    plantMenu: (menuName, menuSelector) -> 
-      @menuSelectors ?= {} 
-      @menuSelectors[menuName] ?= []
-      @menuSelectors[menuName].push menuSelector
-
-      @renderMenu @menus[menuName], menuSelector
+      @_renderMenu @menus[menuName], $menuContainer
 
     updateMenus: (selectedValues) -> 
-      for menuName, menuSelectors of @menuSelectors
-        for menuSelector in menuSelectors
-          @renderMenu @menus[menuName].clamped(selectedValues), menuSelector
+      for menuName, menuContainers of @menuContainers
+        for $menuContainer in menuContainers
+          @_renderMenu @menus[menuName].clamped(selectedValues), $menuContainer
 
+    _renderMenu: (menu, $menuContainer) -> 
+      $menu = $(Renderer.createMarkup menu, @options.templates, @options.identify)
+      $menuContainer.html('').append($menu)
+      @options.activate.call $menu
+      $menu

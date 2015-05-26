@@ -147,3 +147,40 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         expect($($items[2]).data('nedemeuid')).toEqual menuOne.items[0].subMenu.items[1]._uid
         expect($($items[3]).data('nedemeuid')).toEqual menuOne.items[1]._uid
 
+
+      describe 'select event', -> 
+
+        xit 'fires supplied callback function', -> 
+
+          onSelect = jasmine.createSpy('onSelect')
+
+          menuOne = basicMenus.menuOne
+          nedeme = new Nedeme {menuOne: menuOne}, select: onSelect
+
+          $menuContainer = $('<div id="menu1"></div>').appendTo $testTarget
+
+          $menuWidget = nedeme.renderMenu 'menuOne', '#menu1'
+
+          $listItem = $menuContainer.find('ul li').first()
+          
+          # select a list item
+          $menuWidget.menu('focus', $listItem)
+          $menuWidget.select()
+
+          # callback should be called once
+          expect(onSelect.calls.count()).toEqual 1
+
+          call = onSelect.calls.mostRecent()
+
+          # callback should be called with element as its 'this' arg
+          expect(call.object).toBe $listItem[0]
+
+          # callback first argument should be the original event
+          expect(call.args[0]).toBe null # figure something out here
+
+          # callback first argument should be the corresponding menu element
+          expect(call.args[1]).toBe menuOne.items[0]
+
+          # callback second argument should be the nedeme item
+          expect(call.args[2]).toBe nedeme
+

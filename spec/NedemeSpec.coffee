@@ -164,8 +164,8 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $listItem = $menuContainer.find('ul li').first()
           
           # select a list item
-          $menuWidget.menu('focus', $listItem)
-          $menuWidget.select()
+          $menuWidget.menu('focus', null, $listItem)
+          $menuWidget.menu('select')
 
           # callback should be called once
           expect(onSelect.calls.count()).toEqual 1

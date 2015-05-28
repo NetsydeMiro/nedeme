@@ -23,12 +23,41 @@ define ['Utility', 'MenuItem'], (Utility, MenuItem) ->
       result &= @items.length is obj.items.length and 
         [0...@items.length].every((i) => @items[i].equals(obj.items[i]))
 
+    find: (uid) -> 
+      flatResult = @_filterAll (el) -> el._uid == uid
+
+      if flatResult.length > 0
+        flatResult[0]
+      else
+        null
+
     # filters menu of those items that don't pass the requisite clamps
     clamped: (clamps) -> 
-      clamped = new Menu(@)
-      clamped.items = for item in clamped.items when item.passesClamps(clamps)
-        item.subMenu = item.subMenu and item.subMenu.clamped clamps
+      @_filterItems( (menuItem) -> menuItem.passesClamps(clamps) )
+
+    _filterItems: (predicate) -> 
+      result = new Menu(@)
+      result.items = for item in result.items when predicate.call(null, item)
+        item.subMenu = item.subMenu and item.subMenu._filterItems(predicate)
         item
 
-      clamped
+      result 
+
+    _filterAll: (predicate) -> 
+
+      filterAllHelper = (element, result) -> 
+        if predicate.call(null, element)
+          result.push element
+
+        if element.items 
+          for item in element.items
+            result = result.concat filterAllHelper(item, result)
+
+        else if element.subMenu
+          result = result.concat filterAllHelper(element.subMenu, result)
+
+        return result
+
+
+      filterAllHelper(this, [])
 

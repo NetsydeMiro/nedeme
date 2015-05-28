@@ -79,6 +79,60 @@ define ['MenuItem', 'Menu'], (MenuItem, Menu) ->
         obj.items[0].text = 'newText'
         expect(menu.equals obj).toBeFalsy()
 
+    describe '#find()', -> 
+      nestedMenu = null
+
+      beforeEach -> 
+
+        nestedMenu = new Menu(
+          {
+            header: 'MenuHeader'
+            items: 
+              [
+                {
+                  value:1 
+                  text:'one' 
+                  clamps: {aClamp: [1]}
+                  subMenu: 
+                    header: 'nested' 
+                    items: 
+                      [
+                        {
+                          value:11
+                          text:'oneone'
+                          clamps: {aClamp: [1]}
+                        },
+                        {
+                          value:12
+                          text:'onetwo'
+                          clamps: {aClamp: [1]}
+                        },
+                      ]
+                },
+                {
+                  value:2 
+                  text:'two'
+                  clamps: {aClamp: [1]}
+                }
+              ]
+          }
+        )
+
+      it 'returns null for missing element', -> 
+        expect(nestedMenu.find('nonsenseuid')).toBeNull()
+
+      it 'finds the menu', -> 
+        expect(nestedMenu.find(nestedMenu._uid)).toBe nestedMenu
+
+      it 'finds a menuItem', -> 
+        expect(nestedMenu.find(nestedMenu.items[1]._uid)).toBe nestedMenu.items[1]
+
+      it 'finds a nested menu', -> 
+        expect(nestedMenu.find(nestedMenu.items[0].subMenu._uid)).toBe nestedMenu.items[0].subMenu
+
+      it 'finds a nested menu item', -> 
+        expect(nestedMenu.find(nestedMenu.items[0].subMenu.items[0]._uid)).toBe nestedMenu.items[0].subMenu.items[0]
+
 
     describe '#clamped()', -> 
 

@@ -150,8 +150,9 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
 
       describe 'select event', -> 
 
-        xit 'fires supplied callback function', -> 
+        onSelect = menuOne = nedeme = $menuContainer = $menuWidget = $listItem = call = null
 
+        beforeEach -> 
           onSelect = jasmine.createSpy('onSelect')
 
           menuOne = basicMenus.menuOne
@@ -165,22 +166,43 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           
           # select a list item
           $menuWidget.menu('focus', null, $listItem)
+
+        it 'fires supplied callback function', -> 
           $menuWidget.menu('select')
-
-          # callback should be called once
-          expect(onSelect.calls.count()).toEqual 1
-
           call = onSelect.calls.mostRecent()
 
-          # callback should be called with element as its 'this' arg
-          expect(call.object).toBe $listItem[0]
+          expect(onSelect.calls.count()).toEqual 1
 
-          # callback first argument should be the original event
-          expect(call.args[0]).toBe null # figure something out here
+        describe 'callback function', -> 
 
-          # callback first argument should be the corresponding menu element
-          expect(call.args[1]).toBe menuOne.items[0]
+          it 'this argument is menu dom', -> 
+            $menuWidget.menu('select')
+            call = onSelect.calls.mostRecent()
 
-          # callback second argument should be the nedeme item
-          expect(call.args[2]).toBe nedeme
+            expect(call.object).toBe $menuWidget[0]
+
+          it 'first argument should be the original event', -> 
+            $menuWidget.menu('select')
+            call = onSelect.calls.mostRecent()
+
+            #TODO: find better test to check for jquery event here
+            expect(call.args[0].type).toEqual 'menuselect' 
+
+          it 'second argument should be selected menu item dom', -> 
+            $menuWidget.menu('select')
+            call = onSelect.calls.mostRecent()
+
+            expect(call.args[1]).toBe $listItem[0]
+
+          it 'third argument should be selected menu item underlying object', -> 
+            $menuWidget.menu('select')
+            call = onSelect.calls.mostRecent()
+
+            expect(call.args[2]).toBe nedeme.menus.menuOne.items[0]
+
+          it 'fourth argument should be the nedeme', -> 
+            $menuWidget.menu('select')
+            call = onSelect.calls.mostRecent()
+
+            expect(call.args[3]).toBe nedeme
 

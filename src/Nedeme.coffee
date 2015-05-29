@@ -3,7 +3,10 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
 
     @defaults = 
       activate: (nedeme) -> 
-        $(this).menu(select: nedeme._getSelectCallback())
+        $(this).menu select: (event, ui) ->
+          uid = ui.item.data 'nedemeuid'
+          menuElement = nedeme.findMenuElement uid
+          nedeme.options.select.call this, event, ui.item[0], menuElement, nedeme
 
       select: (evt, $domMenuElement, dataMenuElement, nedeme) -> 
         test = 7
@@ -46,11 +49,4 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
 
     _addMarkupUid: (obj, markup) -> 
       $('<div></div>').append($(markup).attr('data-nedemeuid', obj._uid)).html()
-
-    _getSelectCallback: () -> 
-      nedeme = this
-      (event, ui) -> 
-        uid = ui.item.data 'nedemeuid'
-        menuElement = nedeme.findMenuElement uid
-        nedeme.options.select.call this, event, ui.item[0], menuElement, nedeme
 

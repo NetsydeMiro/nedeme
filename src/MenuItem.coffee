@@ -16,10 +16,10 @@ define ['Utility'], (Utility) ->
       result = true
       # we don't care about clamps for equality
       for prop, val of obj
-        result &= this[prop] is val unless prop in ['clamps','subMenu']
+        result &&= this[prop] is val unless prop in ['clamps','subMenu']
 
       # subMenu has its own equality check
-      result &= @subMenu is obj.subMenu or @subMenu.equals obj.subMenu
+      result &&= @subMenu is obj.subMenu or @subMenu.equals obj.subMenu
 
     # returns true if this item should not be clamped
     passesClamps: (clamps) -> 

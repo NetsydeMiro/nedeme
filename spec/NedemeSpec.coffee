@@ -148,6 +148,68 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         expect($($items[3]).data('nedemeuid')).toEqual menuOne.items[1]._uid
 
 
+      describe 'selected', -> 
+        
+        nedeme = $menuContainerOne = $menuContainerTwo = $menuWidgetOne = $menuWidgetTwo = null
+
+        beforeEach -> 
+          nedeme = new Nedeme basicMenus
+
+          $menuContainerOne = $('<div id="menu1"></div>').appendTo $testTarget
+          $menuContainerTwo = $('<div id="menu2"></div>').appendTo $testTarget
+
+          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+
+        it 'is empty by default', -> 
+          expect(nedeme.selected).toEqual {}
+
+        it 'can be initialized', -> 
+          nedeme = new Nedeme basicMenus, {selected: {menuOne: 'test'}}
+
+          $menuContainerOne = $('<div id="menu1"></div>').appendTo $testTarget
+          $menuContainerTwo = $('<div id="menu2"></div>').appendTo $testTarget
+
+          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+
+          expect(nedeme.selected).toEqual {menuOne: 'test'}
+
+        it 'is altered during a menu select', -> 
+          $listItem = $menuContainerOne.find('ul li').first()
+          
+          # select a list item
+          $menuWidgetOne.menu('focus', null, $listItem)
+          $menuWidgetOne.menu('select')
+
+          expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[0]).toBe true
+
+          $listItem = $menuContainerOne.find('ul li').last()
+          
+          # select another list item
+          $menuWidgetOne.menu('focus', null, $listItem)
+          $menuWidgetOne.menu('select')
+
+          expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[1]).toBe true
+
+        it 'can a selection per menu', -> 
+          $listItem = $menuContainerOne.find('ul li').first()
+          
+          # select a list item
+          $menuWidgetOne.menu('focus', null, $listItem)
+          $menuWidgetOne.menu('select')
+
+          expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[0]).toBe true
+
+          $listItem = $menuContainerTwo.find('ul li').last()
+          
+          # select a list item in anothe menu
+          $menuWidgetTwo.menu('focus', null, $listItem)
+          $menuWidgetTwo.menu('select')
+
+          expect(nedeme.selected.menuTwo.equals basicMenus.menuTwo.items[1]).toBe true
+
+
       describe 'select event', -> 
 
         onSelect = menuOne = nedeme = $menuContainer = $menuWidget = $listItem = call = null

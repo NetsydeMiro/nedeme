@@ -20,7 +20,7 @@ define ['Utility', 'MenuItem'], (Utility, MenuItem) ->
           result &= @[prop] is val
 
       # items have their own equality check
-      result &= @items.length is obj.items.length and 
+      result &&= @items.length is obj.items.length and 
         [0...@items.length].every((i) => @items[i].equals(obj.items[i]))
 
     find: (uid) -> 

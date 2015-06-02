@@ -31,6 +31,7 @@ node_modules
 
 # ignore vim temp files
 *.swp
+*.swo
 
 # this is a coffeescript project
 src/*.js

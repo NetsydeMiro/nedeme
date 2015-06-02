@@ -6,7 +6,7 @@ define ['Utility'], (Utility) ->
       for prop, val of obj
         @[prop] = val unless prop in ['clamps','subMenu']
 
-      @_uid = Utility.guid()
+      @_uid ?= Utility.guid()
 
       # except clamps (which have a default) and suMenu (which should have a constructor)
       @clamps = obj.clamps ? {}

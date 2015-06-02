@@ -187,12 +187,13 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $listItem = $menuContainerOne.find('ul li').last()
           
           # select another list item
+          $menuWidgetOne = nedeme.menuWidgets.menuOne
           $menuWidgetOne.menu('focus', null, $listItem)
           $menuWidgetOne.menu('select')
 
           expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[1]).toBe true
 
-        it 'can a selection per menu', -> 
+        it 'can set a selection per menu', -> 
           $listItem = $menuContainerOne.find('ul li').first()
           
           # select a list item
@@ -204,10 +205,56 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $listItem = $menuContainerTwo.find('ul li').last()
           
           # select a list item in anothe menu
+          $menuWidgetTwo = nedeme.menuWidgets.menuTwo
           $menuWidgetTwo.menu('focus', null, $listItem)
           $menuWidgetTwo.menu('select')
 
           expect(nedeme.selected.menuTwo.equals basicMenus.menuTwo.items[1]).toBe true
+
+      xdescribe 'clamping', -> 
+
+        nedeme = clampedMenus = $menuContainerOne = $menuContainer2 = null
+
+        beforeEach -> 
+          clampedMenus = 
+            menuOne: 
+              items: [
+                {
+                  text: 'A1' 
+                  subMenu: 
+                    items: [
+                      {text: 'B1'}
+                      {text: 'B2'}
+                    ]
+                }
+                {text: 'A2', clamps: {menuTwo: 'C2'}}
+              ]
+            menuTwo:
+              items: [
+                {
+                  text: 'C1', 
+                  clamps: {menuOne: ['A2']}
+                  subMenu:
+                    items: [
+                      {text: 'D1'}
+                      {text: 'D2'}
+                    ]
+                }
+                {text: 'C2'}
+              ]
+
+          $menuContainerOne = $('<div id="menu1"></div>').appendTo $testTarget
+          $menuContainerTwo = $('<div id="menu2"></div>').appendTo $testTarget
+
+          nedeme = new Nedeme(clampedMenus)
+
+        it 'clamps menus on initial render', -> 
+
+          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+
+          expect($menuWidgetOne.find('ul > li').length).toBe 1
+          expect($menuWidgetTwo.find('ul > li').length).toBe 1
 
 
       describe 'select event', -> 

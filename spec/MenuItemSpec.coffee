@@ -19,7 +19,6 @@ define ['MenuItem', 'jquery'], (MenuItem) ->
 
         expect(item._uid).not.toEqual item2._uid
       
-
     describe '#equals', -> 
 
       it 'returns truthy if specific properties are same ', -> 

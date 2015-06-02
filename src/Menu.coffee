@@ -9,7 +9,7 @@ define ['Utility', 'MenuItem'], (Utility, MenuItem) ->
       # except items, which are treated differently
       @items = (new MenuItem(itemObject, Menu) for itemObject in obj.items)
 
-      @_uid = Utility.guid()
+      @_uid ?= Utility.guid()
 
     equals: (obj) -> 
       result = true

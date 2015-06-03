@@ -25,7 +25,7 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
         selectedItem and selectedItem.text or null
 
       templates: 
-        menu:             '<ul>{{items}}</ul>'
+        menu:             '<ul style="width: 200px">{{items}}</ul>'
         menuItem:         '<li>{{text}}{{subMenu}}</li>'
         #TODO: make render use clamped template instead of just omitting its rendering
         menuItemClamped:  ''

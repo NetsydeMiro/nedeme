@@ -7,6 +7,9 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
     result = markup.replace ///\sdata-nedemeuid="#{guidFormat}"///g, ''
     result
 
+  stripStyle = (markup) -> 
+    markup.replace /\sstyle=\"[^\"]*\"/g, ''
+
   # from http://stackoverflow.com/questions/3442394/jquery-using-text-to-retrieve-only-text-not-nested-in-child-tags
   textAndOnlyText = ($element) -> 
     $element.contents().filter( -> @nodeType is 3 )[0].nodeValue
@@ -87,8 +90,8 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         </ul>\
         "
 
-        expect(stripMarkupIds $menu1.html()).toEqual expected1
-        expect(stripMarkupIds $menu2.html()).toEqual expected2
+        expect(stripStyle(stripMarkupIds $menu1.html())).toEqual expected1
+        expect(stripStyle(stripMarkupIds $menu2.html())).toEqual expected2
 
       it 'clears existing content prior to rendering', -> 
 
@@ -124,8 +127,8 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         </ul>\
         "
 
-        expect(stripMarkupIds $menu1.html()).toEqual expected1
-        expect(stripMarkupIds $menu2.html()).toEqual expected2
+        expect(stripStyle(stripMarkupIds $menu1.html())).toEqual expected1
+        expect(stripStyle(stripMarkupIds $menu2.html())).toEqual expected2
 
 
       it 'tags markup with appropriate ids', -> 

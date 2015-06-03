@@ -14,7 +14,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
   textAndOnlyText = ($element) -> 
     $element.contents().filter( -> @nodeType is 3 )[0].nodeValue
 
-  describe 'Nedeme', -> 
+  xdescribe 'Nedeme', -> 
 
     $testTarget = null
 

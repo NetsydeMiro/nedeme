@@ -12,8 +12,7 @@ define ['Utility', 'MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (Utility, MenuI
           Utility.extend nedeme.selected, justSelected
           if nedeme.options.select.call(this, event, ui.item[0], menuElement, nedeme)
             for menuName, menu of nedeme.menus
-              for menuContainer in nedeme.menuContainers[menuName]
-                nedeme._renderMenu(menuName, menuContainer)
+              nedeme._updateMenu menuName
 
       select: (evt, $domMenuElement, dataMenuElement, nedeme) -> 
         test = 7
@@ -33,7 +32,6 @@ define ['Utility', 'MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (Utility, MenuI
         menuItemDisabled:  ''
         divider:          '<li class="ui-widget-header">{{text}}</li>'
 
-
     constructor: (menus, options = {}) -> 
       @options = Utility.extend true, {}, Nedeme.defaults, options
       @menus = {}
@@ -46,27 +44,29 @@ define ['Utility', 'MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (Utility, MenuI
 
     renderMenu: (menuName, menuSelector) -> 
       @menuContainers ?= {} 
-      @menuContainers[menuName] ?= []
-      @menuContainers[menuName].push($menuContainer = $(menuSelector))
+      @menuContainers[menuName] ?= $()
+      @menuContainers[menuName].add($menuContainer = $(menuSelector))
 
-      @_renderMenu menuName, $menuContainer
+      @_renderMenu menuName
 
+    ###
     updateMenus: (selectedValues) -> 
       for menuName, menuContainers of @menuContainers
         for $menuContainer in menuContainers
           @_renderMenu @menus[menuName].clamped(selectedValues), $menuContainer
+    ###
 
     findMenuElement: (uid) -> 
       for menuName, menu of @menus
         return [menuName, foundElement] if foundElement = menu.find(uid)
 
     #TODO: replace with _updateMenu, that walks menu dom and updates it according to menu internals
-    _renderMenu: (menuName, $menuContainer) -> 
+    _renderMenu: (menuName) -> 
       @menuWidgets ?= {}
       @menuWidgets[menuName] and @menuWidgets[menuName].remove()
       menu = @menus[menuName].clamped(@_mapClamps())
       $menu = $(Renderer.createMarkup menu, @options.templates, @_addMarkupUid)
-      $menuContainer.html('').append($menu)
+      @menuContainers[menuName].html('').append($menu)
       @options.activate.call $menu, this
       @menuWidgets[menuName] = $menu
 

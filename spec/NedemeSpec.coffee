@@ -7,6 +7,10 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
     result = markup.replace ///\sdata-nedemeuid="#{guidFormat}"///g, ''
     result
 
+  # from http://stackoverflow.com/questions/3442394/jquery-using-text-to-retrieve-only-text-not-nested-in-child-tags
+  textAndOnlyText = ($element) -> 
+    $element.contents().filter( -> @nodeType is 3 )[0].nodeValue
+
   describe 'Nedeme', -> 
 
     $testTarget = null
@@ -193,7 +197,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
 
           expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[1]).toBe true
 
-        it 'can set a selection per menu', -> 
+        it 'can set a selection per mens.u', -> 
           $listItem = $menuContainerOne.find('ul li').first()
           
           # select a list item
@@ -211,7 +215,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
 
           expect(nedeme.selected.menuTwo.equals basicMenus.menuTwo.items[1]).toBe true
 
-      xdescribe 'clamping', -> 
+      describe 'clamping', -> 
 
         nedeme = clampedMenus = $menuContainerOne = $menuContainer2 = null
 
@@ -227,7 +231,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
                       {text: 'B2'}
                     ]
                 }
-                {text: 'A2', clamps: {menuTwo: 'C2'}}
+                {text: 'A2', clamps: {menuTwo: ['C2']}}
               ]
             menuTwo:
               items: [
@@ -246,15 +250,76 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $menuContainerOne = $('<div id="menu1"></div>').appendTo $testTarget
           $menuContainerTwo = $('<div id="menu2"></div>').appendTo $testTarget
 
-          nedeme = new Nedeme(clampedMenus)
 
-        it 'clamps menus on initial render', -> 
+        it 'clamps menus on initial render due to default (none) selections', -> 
+          nedeme = new Nedeme(clampedMenus)
 
           $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
           $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
 
-          expect($menuWidgetOne.find('ul > li').length).toBe 1
-          expect($menuWidgetTwo.find('ul > li').length).toBe 1
+          expect($menuWidgetOne.children('li').length).toBe 1
+          expect(textAndOnlyText($menuWidgetOne.children('li'))).toEqual 'A1'
+          expect($menuWidgetTwo.children('li').length).toBe 1
+          expect($menuWidgetTwo.children('li').text()).toEqual 'C2'
+
+        it 'does not clamp menus on initial render if appropriate selection is provided', -> 
+          nedeme = new Nedeme clampedMenus
+          nedeme.selected = menuOne: nedeme.menus.menuOne.items[1]
+
+          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+
+          expect($menuWidgetOne.children('li').length).toBe 1
+          expect(textAndOnlyText($menuWidgetOne.children('li'))).toEqual 'A1'
+          expect($menuWidgetTwo.children('li').length).toBe 2
+
+        it 'clamps menu if appropriate selection made', -> 
+          nedeme = new Nedeme clampedMenus
+          nedeme.selected = menuOne: nedeme.menus.menuOne.items[1], menuTwo: nedeme.menus.menuTwo.items[1]
+
+          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+
+          expect($menuWidgetOne.children('li').length).toBe 2
+          expect($menuWidgetTwo.children('li').length).toBe 2
+
+          # clamp menu two
+          $listItem = $menuWidgetOne.children('li').first()
+          $menuWidgetTwo.menu('focus', null, $listItem)
+          $menuWidgetTwo.menu('select')
+
+          $menuWidgetTwo = nedeme.menuWidgets.menuTwo
+
+          expect($menuWidgetOne.children('li').length).toBe 2
+          expect($menuWidgetTwo.children('li').length).toBe 1
+          expect($menuWidgetTwo.children('li').text()).toEqual 'C2'
+
+
+        it 'unclamps menu if appropriate selection made', -> 
+          nedeme = new Nedeme(clampedMenus)
+
+          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+
+          # unclamp menu one
+          $listItem = $menuWidgetTwo.children('li')
+          $menuWidgetTwo.menu('focus', null, $listItem)
+          $menuWidgetTwo.menu('select')
+
+          $menuWidgetOne = nedeme.menuWidgets['menuOne']
+
+          expect($menuWidgetOne.children('li').length).toBe 2
+          expect($menuWidgetTwo.children('li').length).toBe 1
+
+          # unclamp menu two
+          $listItem = $menuWidgetOne.children('li').last()
+          $menuWidgetOne.menu('focus', null, $listItem)
+          $menuWidgetOne.menu('select')
+
+          $menuWidgetTwo = nedeme.menuWidgets['menuTwo']
+
+          expect($menuWidgetOne.children('li').length).toBe 2
+          expect($menuWidgetTwo.children('li').length).toBe 2
 
 
       describe 'select event', -> 

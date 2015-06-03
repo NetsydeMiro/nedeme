@@ -3,6 +3,7 @@ define ['Utility', 'jquery'], (Utility) ->
   #TODO create guid id matcher
 
   describe 'Utility', -> 
+
     describe '::guid', -> 
 
       it 'creates a string', -> 
@@ -18,3 +19,23 @@ define ['Utility', 'jquery'], (Utility) ->
 
         expect(guid.match(guidFormat)[0]).toEqual guid
 
+
+    describe 'addAttributes', ->
+
+      it 'adds an attribute', -> 
+        markup = '<div></div>'
+        result = Utility.addAttributes markup, {attrname: 'attrValue'}
+
+        expect(result).toEqual '<div attrname="attrValue"></div>'
+
+      it 'downcases attribute names', -> 
+        markup = '<div></div>'
+        result = Utility.addAttributes markup, {hungarianCaseName: 'attrValue'}
+
+        expect(result).toEqual '<div hungariancasename="attrValue"></div>'
+
+      it 'can add multiple attributes', -> 
+        markup = '<div></div>'
+        result = Utility.addAttributes markup, {attrname: 'attrValue', attrname2: 'attrValue2'}
+
+        expect(result).toEqual '<div attrname="attrValue" attrname2="attrValue2"></div>'

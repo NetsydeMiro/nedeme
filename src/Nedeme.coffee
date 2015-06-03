@@ -1,4 +1,4 @@
-define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer) -> 
+define ['Utility', 'MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (Utility, MenuItem, Menu, Renderer) -> 
   # TODO: Pull out jquery dependencies into utility or renderer block, to allow swapping in another library
   # or eliminate dependencies altogether
   class Nedeme
@@ -9,7 +9,7 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
           uid = ui.item.data 'nedemeuid'
           [menuName, menuElement] = nedeme.findMenuElement uid
           justSelected = {}; justSelected[menuName] = menuElement
-          $.extend nedeme.selected, justSelected
+          Utility.extend nedeme.selected, justSelected
           if nedeme.options.select.call(this, event, ui.item[0], menuElement, nedeme)
             for menuName, menu of nedeme.menus
               for menuContainer in nedeme.menuContainers[menuName]
@@ -27,13 +27,15 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
       templates: 
         menu:             '<ul style="width: 200px">{{items}}</ul>'
         menuItem:         '<li>{{text}}{{subMenu}}</li>'
-        #TODO: make render use clamped template instead of just omitting its rendering
-        menuItemClamped:  ''
+
+        # TODO: make items specify removeUnless & disableUnless
+        menuItemRemoved:  ''
+        menuItemDisabled:  ''
         divider:          '<li class="ui-widget-header">{{text}}</li>'
 
 
     constructor: (menus, options = {}) -> 
-      @options = $.extend true, {}, Nedeme.defaults, options
+      @options = Utility.extend true, {}, Nedeme.defaults, options
       @menus = {}
       @selected = @options.selected
       for name, menu of menus
@@ -58,6 +60,7 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
       for menuName, menu of @menus
         return [menuName, foundElement] if foundElement = menu.find(uid)
 
+    #TODO: replace with _updateMenu, that walks menu dom and updates it according to menu internals
     _renderMenu: (menuName, $menuContainer) -> 
       @menuWidgets ?= {}
       @menuWidgets[menuName] and @menuWidgets[menuName].remove()
@@ -68,7 +71,7 @@ define ['MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (MenuItem, Menu, Renderer)
       @menuWidgets[menuName] = $menu
 
     _addMarkupUid: (obj, markup) -> 
-      $('<div></div>').append($(markup).attr('data-nedemeuid', obj._uid)).html()
+      Utility.addAttributes markup, {'data-nedemeuid': obj._uid}
 
     _mapClamps: -> 
       clamps = {}

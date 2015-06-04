@@ -10,11 +10,14 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
   stripStyle = (markup) -> 
     markup.replace /\sstyle=\"[^\"]*\"/g, ''
 
+  stripButton = (markup) -> 
+    markup.replace /<button.*button>/g, ''
+
   # from http://stackoverflow.com/questions/3442394/jquery-using-text-to-retrieve-only-text-not-nested-in-child-tags
   textAndOnlyText = ($element) -> 
     $element.contents().filter( -> @nodeType is 3 )[0].nodeValue
 
-  xdescribe 'Nedeme', -> 
+  describe 'Nedeme', -> 
 
     $testTarget = null
 
@@ -58,7 +61,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
 
       it 'renders default menus', -> 
 
-        nedeme = new Nedeme basicMenus, {activate: -> }
+        nedeme = new Nedeme basicMenus, {activateDropdown: -> }
 
         $menu1 = $('<div id="menu1"></div>').appendTo $testTarget
         $menu2 = $('<div id="menu2"></div>').appendTo $testTarget
@@ -90,50 +93,13 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         </ul>\
         "
 
-        expect(stripStyle(stripMarkupIds $menu1.html())).toEqual expected1
-        expect(stripStyle(stripMarkupIds $menu2.html())).toEqual expected2
-
-      it 'clears existing content prior to rendering', -> 
-
-        nedeme = new Nedeme basicMenus, {activate: -> }
-
-        $menu1 = $('<div id="menu1">Dummy Content</div>').appendTo $testTarget
-        $menu2 = $('<div id="menu2">Should Disappear</div>').appendTo $testTarget
-
-        nedeme.renderMenu 'menuOne', '#menu1'
-        nedeme.renderMenu 'menuTwo', '#menu2'
-
-        expected1 = "
-        <ul>\
-        <li>A1\
-        <ul>\
-        <li>B1</li>\
-        <li>B2</li>\
-        </ul>\
-        </li>\
-        <li>A2</li>\
-        </ul>\
-        "
-
-        expected2 = "
-        <ul>\
-        <li>C1\
-        <ul>\
-        <li>D1</li>\
-        <li>D2</li>\
-        </ul>\
-        </li>\
-        <li>C2</li>\
-        </ul>\
-        "
-
-        expect(stripStyle(stripMarkupIds $menu1.html())).toEqual expected1
-        expect(stripStyle(stripMarkupIds $menu2.html())).toEqual expected2
+        expect(stripButton(stripStyle(stripMarkupIds $menu1.html()))).toEqual expected1
+        expect(stripButton(stripStyle(stripMarkupIds $menu2.html()))).toEqual expected2
 
 
       it 'tags markup with appropriate ids', -> 
 
-        nedeme = new Nedeme {menuOne: basicMenus.menuOne}, {activate: -> }
+        nedeme = new Nedeme {menuOne: basicMenus.menuOne}, {activateDropdown: -> }
 
         $menuContainer = $('<div id="menu1">Dummy Content</div>').appendTo $testTarget
 
@@ -157,7 +123,7 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
 
       describe 'selected', -> 
         
-        nedeme = $menuContainerOne = $menuContainerTwo = $menuWidgetOne = $menuWidgetTwo = null
+        nedeme = $menuContainerOne = $menuContainerTwo = $dropdownWidgetOne = $dropdownWidgetTwo = null
 
         beforeEach -> 
           nedeme = new Nedeme basicMenus
@@ -165,8 +131,8 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $menuContainerOne = $('<div id="menu1"></div>').appendTo $testTarget
           $menuContainerTwo = $('<div id="menu2"></div>').appendTo $testTarget
 
-          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
-          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+          $dropdownWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $dropdownWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
 
         it 'is empty by default', -> 
           expect(nedeme.selected).toEqual {}
@@ -177,8 +143,8 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $menuContainerOne = $('<div id="menu1"></div>').appendTo $testTarget
           $menuContainerTwo = $('<div id="menu2"></div>').appendTo $testTarget
 
-          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
-          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+          $dropdownWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $dropdownWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
 
           expect(nedeme.selected).toEqual {menuOne: 'test'}
 
@@ -186,17 +152,17 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $listItem = $menuContainerOne.find('ul li').first()
           
           # select a list item
-          $menuWidgetOne.menu('focus', null, $listItem)
-          $menuWidgetOne.menu('select')
+          $dropdownWidgetOne.menu('focus', null, $listItem)
+          $dropdownWidgetOne.menu('select')
 
           expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[0]).toBe true
 
           $listItem = $menuContainerOne.find('ul li').last()
           
           # select another list item
-          $menuWidgetOne = nedeme.menuWidgets.menuOne
-          $menuWidgetOne.menu('focus', null, $listItem)
-          $menuWidgetOne.menu('select')
+          $dropdownWidgetOne = nedeme.dropdownWidgets.menuOne
+          $dropdownWidgetOne.menu('focus', null, $listItem)
+          $dropdownWidgetOne.menu('select')
 
           expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[1]).toBe true
 
@@ -204,17 +170,17 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
           $listItem = $menuContainerOne.find('ul li').first()
           
           # select a list item
-          $menuWidgetOne.menu('focus', null, $listItem)
-          $menuWidgetOne.menu('select')
+          $dropdownWidgetOne.menu('focus', null, $listItem)
+          $dropdownWidgetOne.menu('select')
 
           expect(nedeme.selected.menuOne.equals basicMenus.menuOne.items[0]).toBe true
 
           $listItem = $menuContainerTwo.find('ul li').last()
           
           # select a list item in anothe menu
-          $menuWidgetTwo = nedeme.menuWidgets.menuTwo
-          $menuWidgetTwo.menu('focus', null, $listItem)
-          $menuWidgetTwo.menu('select')
+          $dropdownWidgetTwo = nedeme.dropdownWidgets.menuTwo
+          $dropdownWidgetTwo.menu('focus', null, $listItem)
+          $dropdownWidgetTwo.menu('select')
 
           expect(nedeme.selected.menuTwo.equals basicMenus.menuTwo.items[1]).toBe true
 
@@ -257,77 +223,77 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         it 'clamps menus on initial render due to default (none) selections', -> 
           nedeme = new Nedeme(clampedMenus)
 
-          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
-          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+          $dropdownWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $dropdownWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
 
-          expect($menuWidgetOne.children('li').length).toBe 1
-          expect(textAndOnlyText($menuWidgetOne.children('li'))).toEqual 'A1'
-          expect($menuWidgetTwo.children('li').length).toBe 1
-          expect($menuWidgetTwo.children('li').text()).toEqual 'C2'
+          expect($dropdownWidgetOne.children('li').length).toBe 1
+          expect(textAndOnlyText($dropdownWidgetOne.children('li'))).toEqual 'A1'
+          expect($dropdownWidgetTwo.children('li').length).toBe 1
+          expect($dropdownWidgetTwo.children('li').text()).toEqual 'C2'
 
         it 'does not clamp menus on initial render if appropriate selection is provided', -> 
           nedeme = new Nedeme clampedMenus
           nedeme.selected = menuOne: nedeme.menus.menuOne.items[1]
 
-          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
-          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+          $dropdownWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $dropdownWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
 
-          expect($menuWidgetOne.children('li').length).toBe 1
-          expect(textAndOnlyText($menuWidgetOne.children('li'))).toEqual 'A1'
-          expect($menuWidgetTwo.children('li').length).toBe 2
+          expect($dropdownWidgetOne.children('li').length).toBe 1
+          expect(textAndOnlyText($dropdownWidgetOne.children('li'))).toEqual 'A1'
+          expect($dropdownWidgetTwo.children('li').length).toBe 2
 
         it 'clamps menu if appropriate selection made', -> 
           nedeme = new Nedeme clampedMenus
           nedeme.selected = menuOne: nedeme.menus.menuOne.items[1], menuTwo: nedeme.menus.menuTwo.items[1]
 
-          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
-          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+          $dropdownWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $dropdownWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
 
-          expect($menuWidgetOne.children('li').length).toBe 2
-          expect($menuWidgetTwo.children('li').length).toBe 2
+          expect($dropdownWidgetOne.children('li').length).toBe 2
+          expect($dropdownWidgetTwo.children('li').length).toBe 2
 
           # clamp menu two
-          $listItem = $menuWidgetOne.children('li').first()
-          $menuWidgetTwo.menu('focus', null, $listItem)
-          $menuWidgetTwo.menu('select')
+          $listItem = $dropdownWidgetOne.children('li').first()
+          $dropdownWidgetTwo.menu('focus', null, $listItem)
+          $dropdownWidgetTwo.menu('select')
 
-          $menuWidgetTwo = nedeme.menuWidgets.menuTwo
+          $dropdownWidgetTwo = nedeme.dropdownWidgets.menuTwo
 
-          expect($menuWidgetOne.children('li').length).toBe 2
-          expect($menuWidgetTwo.children('li').length).toBe 1
-          expect($menuWidgetTwo.children('li').text()).toEqual 'C2'
+          expect($dropdownWidgetOne.children('li').length).toBe 2
+          expect($dropdownWidgetTwo.children('li').length).toBe 1
+          expect($dropdownWidgetTwo.children('li').text()).toEqual 'C2'
 
 
         it 'unclamps menu if appropriate selection made', -> 
           nedeme = new Nedeme(clampedMenus)
 
-          $menuWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
-          $menuWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
+          $dropdownWidgetOne = nedeme.renderMenu 'menuOne', '#menu1'
+          $dropdownWidgetTwo = nedeme.renderMenu 'menuTwo', '#menu2'
 
           # unclamp menu one
-          $listItem = $menuWidgetTwo.children('li')
-          $menuWidgetTwo.menu('focus', null, $listItem)
-          $menuWidgetTwo.menu('select')
+          $listItem = $dropdownWidgetTwo.children('li')
+          $dropdownWidgetTwo.menu('focus', null, $listItem)
+          $dropdownWidgetTwo.menu('select')
 
-          $menuWidgetOne = nedeme.menuWidgets['menuOne']
+          $dropdownWidgetOne = nedeme.dropdownWidgets['menuOne']
 
-          expect($menuWidgetOne.children('li').length).toBe 2
-          expect($menuWidgetTwo.children('li').length).toBe 1
+          expect($dropdownWidgetOne.children('li').length).toBe 2
+          expect($dropdownWidgetTwo.children('li').length).toBe 1
 
           # unclamp menu two
-          $listItem = $menuWidgetOne.children('li').last()
-          $menuWidgetOne.menu('focus', null, $listItem)
-          $menuWidgetOne.menu('select')
+          $listItem = $dropdownWidgetOne.children('li').last()
+          $dropdownWidgetOne.menu('focus', null, $listItem)
+          $dropdownWidgetOne.menu('select')
 
-          $menuWidgetTwo = nedeme.menuWidgets['menuTwo']
+          $dropdownWidgetTwo = nedeme.dropdownWidgets['menuTwo']
 
-          expect($menuWidgetOne.children('li').length).toBe 2
-          expect($menuWidgetTwo.children('li').length).toBe 2
+          expect($dropdownWidgetOne.children('li').length).toBe 2
+          expect($dropdownWidgetTwo.children('li').length).toBe 2
 
 
       describe 'select event', -> 
 
-        onSelect = menuOne = nedeme = $menuContainer = $menuWidget = $listItem = call = null
+        onSelect = menuOne = nedeme = $menuContainer = $dropdownWidget = $listItem = call = null
 
         beforeEach -> 
           onSelect = jasmine.createSpy('onSelect')
@@ -337,15 +303,15 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
 
           $menuContainer = $('<div id="menu1"></div>').appendTo $testTarget
 
-          $menuWidget = nedeme.renderMenu 'menuOne', '#menu1'
+          $dropdownWidget = nedeme.renderMenu 'menuOne', '#menu1'
 
           $listItem = $menuContainer.find('ul li').first()
           
           # select a list item
-          $menuWidget.menu('focus', null, $listItem)
+          $dropdownWidget.menu('focus', null, $listItem)
 
         it 'fires supplied callback function', -> 
-          $menuWidget.menu('select')
+          $dropdownWidget.menu('select')
           call = onSelect.calls.mostRecent()
 
           expect(onSelect.calls.count()).toEqual 1
@@ -353,33 +319,39 @@ define ['Nedeme', 'jquery-ui'], (Nedeme) ->
         describe 'callback function', -> 
 
           it 'this argument is menu dom', -> 
-            $menuWidget.menu('select')
+            $dropdownWidget.menu('select')
             call = onSelect.calls.mostRecent()
 
-            expect(call.object).toBe $menuWidget[0]
+            expect(call.object).toBe $dropdownWidget[0]
 
           it 'first argument should be the original event', -> 
-            $menuWidget.menu('select')
+            $dropdownWidget.menu('select')
             call = onSelect.calls.mostRecent()
 
             #TODO: find better test to check for jquery event here
             expect(call.args[0].type).toEqual 'menuselect' 
 
           it 'second argument should be selected menu item dom', -> 
-            $menuWidget.menu('select')
+            $dropdownWidget.menu('select')
             call = onSelect.calls.mostRecent()
 
             expect(call.args[1]).toBe $listItem[0]
 
           it 'third argument should be selected menu item underlying object', -> 
-            $menuWidget.menu('select')
+            $dropdownWidget.menu('select')
             call = onSelect.calls.mostRecent()
 
             expect(call.args[2]).toBe nedeme.menus.menuOne.items[0]
 
           it 'fourth argument should be the nedeme', -> 
-            $menuWidget.menu('select')
+            $dropdownWidget.menu('select')
             call = onSelect.calls.mostRecent()
 
             expect(call.args[3]).toBe nedeme
+
+          it 'fifth argument should be the menuName', -> 
+            $dropdownWidget.menu('select')
+            call = onSelect.calls.mostRecent()
+
+            expect(call.args[4]).toBe 'menuOne'
 

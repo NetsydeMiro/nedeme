@@ -27,7 +27,6 @@ define ['Renderer'], (Renderer) ->
 
     describe '::createMarkup()', -> 
 
-
       it 'gets correct markup for empty menu', -> 
 
         markup = Renderer.createMarkup {header: 'AHeader', items: []}, 

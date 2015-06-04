@@ -3,7 +3,7 @@ requirejs.config({
 
   paths: {
     'jquery':     '../lib/jquery-2.1.3',
-    'jquery-ui':  '../lib/jquery-ui-1.11.4-core-menu'
+    'jquery-ui':  '../lib/jquery-ui-1.11.4-button-menu'
   }, 
 
   shim: {

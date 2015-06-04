@@ -1,14 +1,15 @@
 define ['Utility', 'MenuItem'], (Utility, MenuItem) -> 
   class Menu
 
-    constructor: (obj) -> 
+    constructor: (obj, parentItem = null) -> 
       # menu gets all properties of obj
       for prop, val of obj
         @[prop] = val unless prop is 'items'
 
       # except items, which are treated differently
-      @items = (new MenuItem(itemObject, Menu) for itemObject in obj.items)
+      @items = (new MenuItem(itemObject, Menu, this) for itemObject in obj.items)
 
+      @parent = parentItem
       @_uid ?= Utility.guid()
 
     equals: (obj) -> 

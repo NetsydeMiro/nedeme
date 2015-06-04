@@ -1,7 +1,7 @@
 define ['Utility'], (Utility) -> 
   class MenuItem 
 
-    constructor: (obj, MenuConstructor) -> 
+    constructor: (obj, MenuConstructor, parentMenu) -> 
       # MenuItem gets all properties of obj
       for prop, val of obj
         @[prop] = val unless prop in ['clamps','subMenu']
@@ -9,8 +9,9 @@ define ['Utility'], (Utility) ->
       @_uid ?= Utility.guid()
 
       # except clamps (which have a default) and suMenu (which should have a constructor)
+      @parent = parentMenu
       @clamps = obj.clamps ? {}
-      @subMenu = obj.subMenu and MenuConstructor and new MenuConstructor(obj.subMenu) || obj.subMenu
+      @subMenu = obj.subMenu and MenuConstructor and new MenuConstructor(obj.subMenu, this) || obj.subMenu
 
     equals: (obj) -> 
       result = true

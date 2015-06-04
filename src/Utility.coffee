@@ -17,3 +17,10 @@ define ['jquery'], ->
     @extend: -> 
       $.extend.apply null, arguments
 
+    @ancestorBranch: -> 
+      if not @parent
+        [this]
+      else
+        result = Utility.ancestorBranch.call(@parent)
+        result.push this
+        result

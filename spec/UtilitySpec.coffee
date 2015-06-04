@@ -40,6 +40,7 @@ define ['Utility', 'jquery'], (Utility) ->
 
         expect(result).toEqual '<div attrname="attrValue" attrname2="attrValue2"></div>'
 
+
     describe '::ancestorBranch()', -> 
 
       it 'returns list with just itself if there is no parent property', -> 

@@ -35,7 +35,6 @@ define ['Utility', 'MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (Utility, MenuI
         lineage = ancestorBranch.join ' - ' 
         name + ': ' + lineage
 
-
       templates: 
         trigger:      '<button>{{menuName}}</button>'
         menu:         '<ul style="width: 200px">{{items}}</ul>'

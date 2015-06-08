@@ -70,7 +70,16 @@ define ['Utility', 'MenuItem', 'Menu', 'Renderer', 'jquery-ui'], (Utility, MenuI
       $menu = $(Renderer.createMarkup menu, @options.templates, @_addMarkupUid)
       @menuContainers[menuName].append($menu)
       @options.activateDropdown.call $menu, this
+
+      # we hide menu at first
       $menu.hide()
+
+      # and if it's open and if we click outside of it
+      do ($menu) -> 
+        $(document).mouseup (e) -> 
+          if not $menu.is(e.target) and $menu.has(e.target).length is 0
+            $menu.hide()
+        
       @dropdownWidgets[menuName] = $menu
 
     _renderTrigger: (menuName) -> 

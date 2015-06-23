@@ -18,7 +18,7 @@ defaults =
       template: require('grunt-template-jasmine-requirejs')
       templateOptions: 
         requireConfig: 
-          baseUrl: 'compiled/src/'
+          baseUrl: 'compiled/src'
           paths:
             'jquery': '../../lib/jquery-2.1.3'
             'jquery-ui': '../../lib/jquery-ui-1.11.4-button-menu'
@@ -58,7 +58,7 @@ module.exports = (grunt) ->
         [{type: 'exclude', pattern: '{.git,lib,node_modules}/'},
         {type: 'include', pattern: '/'},
         {type: 'include', pattern: '*/'},
-        {type: 'include', pattern: '*.{html,js,css,amaze}'},
+        {type: 'include', pattern: '**/*.{html,js,css,amaze}'},
         {type: 'exclude', pattern: '*'}]
   
   grunt.loadNpmTasks 'grunt-contrib-coffee'

@@ -1,9 +1,9 @@
 requirejs.config({
-  baseUrl: '../src', 
+  baseUrl: '../compiled/src', 
 
   paths: {
-    'jquery':     '../lib/jquery-2.1.3',
-    'jquery-ui':  '../lib/jquery-ui-1.11.4-button-menu'
+    'jquery':     '../../lib/jquery-2.1.3',
+    'jquery-ui':  '../../lib/jquery-ui-1.11.4-button-menu'
   }, 
 
   shim: {

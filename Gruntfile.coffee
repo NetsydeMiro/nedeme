@@ -1,65 +1,56 @@
+extend = require 'extend'
+
+defaults = 
+
+  coffee: 
+    options: 
+      join: false
+      sourceMap: true
+    expand: true
+    flatten: true
+    dest: 'compiled'
+    ext: '.js'
+
+  jasmine: 
+    src: 'compiled/src/*.js'
+    options:
+      specs: 'compiled/spec/*.js'
+      template: require('grunt-template-jasmine-requirejs')
+      templateOptions: 
+        requireConfig: 
+          baseUrl: 'compiled/src/'
+          paths:
+            'jquery': '../../lib/jquery-2.1.3'
+            'jquery-ui': '../../lib/jquery-ui-1.11.4-button-menu'
+            'mock-ajax': '../../lib/mock-ajax'
+          shim: 
+            'jquery-ui':
+              exports: '$'
+              deps: ['jquery']
+
 module.exports = (grunt) -> 
   grunt.initConfig
 
     coffee:
       source: 
-        expand: true
-        src: 'src/*.coffee'
-        ext: '.js'
-        options: 
-          join: false
-          sourceMap: true
+        extend {}, defaults.coffee, {src: 'src/*.coffee', dest: 'compiled/src'}
       spec: 
-        expand: true
-        src: 'spec/*.coffee'
-        ext: '.js'
-        options: 
-          join: false
-          sourceMap: true
+        extend {}, defaults.coffee, {src: 'spec/*.coffee', dest: 'compiled/spec'}
 
     watch:
-      compile: 
+      coffee: 
         files: ['spec/*.coffee', 'src/*.coffee']
-        tasks: 'compile'
-      test:
-        files: ['src/*.js', 'spec/*.js']
-        tasks: 'test:dev'
+        tasks: 'coffee'
+      jasmine:
+        files: 'compiled/**/*.js'
+        tasks: 'jasmine:dev'
 
     jasmine: 
       # we keep _SpecRunner.html around when devving to help debug
       dev: 
-        src: 'src/**.*.js'
-        options:
-          specs: 'spec/*.js'
-          template: require('grunt-template-jasmine-requirejs')
-          templateOptions: 
-            requireConfig: 
-              baseUrl: 'src/'
-              paths:
-                'jquery': '../lib/jquery-2.1.3'
-                'jquery-ui': '../lib/jquery-ui-1.11.4-button-menu'
-                'mock-ajax': '../lib/mock-ajax'
-              shim: 
-                'jquery-ui':
-                  exports: '$'
-                  deps: ['jquery']
-          keepRunner: true
+        extend {}, defaults.jasmine, {options: {keepRunner: true}}
       prod: 
-        src: 'src/**.*.js'
-        options:
-          specs: 'spec/*.js'
-          template: require('grunt-template-jasmine-requirejs')
-          templateOptions: 
-            requireConfig: 
-              baseUrl: 'src/'
-              paths:
-                'jquery': '../lib/jquery-2.1.3'
-                'jquery-ui': '../lib/jquery-ui-1.11.4-button-menu'
-                'mock-ajax': '../lib/mock-ajax'
-              shim: 
-                'jquery-ui':
-                  exports: '$'
-                  deps: ['jquery']
+        defaults.jasmine
 
     livereloadx: 
       static: true
@@ -75,12 +66,10 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'livereloadx'
 
-  grunt.registerTask 'compile', ['coffee']
   grunt.registerTask 'test', ['jasmine:prod']
-  grunt.registerTask 'test:dev', ['jasmine:dev']
 
-  grunt.registerTask 'default', ['compile', 'test']
+  grunt.registerTask 'default', ['coffee', 'test']
   grunt.registerTask 'travis', ['default']
 
-  grunt.registerTask 'serve', ['livereloadx', 'watch:compile']
+  grunt.registerTask 'serve', ['livereloadx', 'watch:coffee']
   grunt.registerTask 'dev', ['livereloadx', 'watch']

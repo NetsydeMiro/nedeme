@@ -48,7 +48,7 @@ module.exports = (grunt) ->
     jasmine: 
       # we keep _SpecRunner.html around when devving to help debug
       dev: 
-        extend {}, defaults.jasmine, {options: {keepRunner: true}}
+        extend true, {}, defaults.jasmine, {options: {keepRunner: true}}
       prod: 
         defaults.jasmine
 

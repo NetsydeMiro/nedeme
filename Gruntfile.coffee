@@ -31,19 +31,28 @@ defaults =
 module.exports = (grunt) -> 
   grunt.initConfig
 
-    coffee:
-      source: 
-        extend {}, defaults.coffee, {src: 'src/*.coffee', dest: 'compiled/src'}
-      spec: 
-        extend {}, defaults.coffee, {src: 'spec/*.coffee', dest: 'compiled/spec'}
-
     watch:
       coffee: 
-        files: ['spec/*.coffee', 'src/*.coffee']
+        files: ['spec/*.coffee', 'src/*coffee']
         tasks: 'coffee'
+      docco: 
+        files: 'src/*.litcoffee'
+        tasks: 'docco'
       jasmine:
         files: 'compiled/**/*.js'
         tasks: 'jasmine:dev'
+
+    coffee:
+      source: 
+        extend {}, defaults.coffee, {src: 'src/*coffee', dest: 'compiled/src'}
+      spec: 
+        extend {}, defaults.coffee, {src: 'spec/*.coffee', dest: 'compiled/spec'}
+
+    docco: 
+      dev: 
+        src: 'src/*.litcoffee'
+        options: 
+          output: 'docs/'
 
     jasmine: 
       # we keep _SpecRunner.html around when devving to help debug
@@ -62,13 +71,14 @@ module.exports = (grunt) ->
         {type: 'exclude', pattern: '*'}]
   
   grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-docco'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'livereloadx'
 
   grunt.registerTask 'test', ['jasmine:prod']
 
-  grunt.registerTask 'default', ['coffee', 'test']
+  grunt.registerTask 'default', ['coffee', 'docco', 'test']
   grunt.registerTask 'travis', ['default']
 
   grunt.registerTask 'serve', ['livereloadx', 'watch:coffee']

@@ -35,3 +35,7 @@ node_modules
 
 # this is a coffeescript project
 compiled
+
+# docs are auto generated
+docs
+

@@ -69,17 +69,23 @@ module.exports = (grunt) ->
         {type: 'include', pattern: '*/'},
         {type: 'include', pattern: '**/*.{html,js,css,amaze}'},
         {type: 'exclude', pattern: '*'}]
+
+    open: 
+      dev: 
+        path: 'http://localhost:35729/_SpecRunner.html'
+
   
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-docco'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'livereloadx'
+  grunt.loadNpmTasks 'grunt-open'
 
   grunt.registerTask 'test', ['jasmine:prod']
 
   grunt.registerTask 'default', ['coffee', 'docco', 'test']
   grunt.registerTask 'travis', ['default']
 
-  grunt.registerTask 'serve', ['livereloadx', 'watch:coffee']
-  grunt.registerTask 'dev', ['livereloadx', 'watch']
+  grunt.registerTask 'serve', ['jasmine:dev', 'open', 'livereloadx', 'watch:coffee']
+  grunt.registerTask 'dev', ['jasmine:dev', 'open', 'livereloadx', 'watch']
